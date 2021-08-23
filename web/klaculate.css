@@ -1,0 +1,97 @@
+body {
+	margin: auto;
+	padding: 16px;
+	border: none;
+	background: #363636;
+	color: #c9c9c9;
+	font-family: monospace;
+	font-size: 20px;
+	tab-size: 4;
+}
+
+a {
+	color: #00ff00;
+	text-decoration: none;
+}
+a:hover:before {
+	content: "> ";
+}
+a:hover:after {
+	content: " <";
+}
+a:hover {
+	color: #ff00ff;
+}
+a:before {
+	content: "[ ";
+	color: #00ffff;
+}
+a:after {
+	content: " ]";
+	color: #00ffff;
+}
+a.nobrak:before {
+	content: "";
+}
+a.nobrak:after {
+	content: "";
+}
+
+img {
+	border: none;
+}
+
+input {
+	color: #c9c9c9;
+	border: 1px solid #c9c9c9;
+	background: #000000;
+	font-family: monospace;
+	font-size: 20px;
+}
+
+form, .fdiv {
+	border-radius: 10px;
+	height: 40px;
+	width: 100%;
+}
+form > * {
+	padding: 5px;
+	border-radius: 10px;
+}
+.header > span {
+	display: inline-block;
+}
+
+.emoji {
+	color: #ffffff;
+}
+div.banner {
+	font-size: 150%;
+}
+
+div.math {
+	border: 1px solid #7f7f7f;
+	border-radius: 5px;
+	margin: 5px;
+}
+
+div.parens {
+	border: 1px solid #7f7f7f;
+	border-left: 10px solid #ff0000;
+	border-right: 10px solid #ff0000;
+	border-radius: 15px;
+	margin: 5px;
+}
+div.parens > span.parens { font-weight: bold; }
+div.exp > span.exp { font-weight: bold; }
+div.mult > span.mult { font-weight: bold; }
+div.divi > span.divi { font-weight: bold; }
+div.add > span.add { font-weight: bold; }
+div.sub > span.sub { font-weight: bold; }
+
+span.parens { color: #00ffff; }
+span.exp { color: #ffffff; }
+span.mult { color: #ff7fff; }
+span.divi { color: #ffff00; }
+span.add { color: #00ff00; }
+span.sub { color: #ff0000; }

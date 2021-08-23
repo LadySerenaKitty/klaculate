@@ -1,0 +1,23 @@
+#ifndef klaculate_h
+#define klaculate_h
+
+#define KLACULATE_NAME "@PROJECT_NAME@"
+#define KLACULATE_VERSION "@klaculate_VERSION@"
+
+#include <map>
+#include <string>
+
+#define @CMAKE_BUILD_TYPE@
+
+#ifdef Debug
+#include <iostream>
+#define DBG(a) std::cout << "[" << a << "]\n"
+#endif
+
+#ifndef Debug
+#define DBG(a) // a
+#endif
+
+void findAndReplaceAll(std::string& data, std::string toSearch, std::string replaceStr);
+
+#endif /* klaculate_h */

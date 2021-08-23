@@ -1,0 +1,12 @@
+#!/bin/sh
+# PROVIDE: klac
+# REQUIRE: DAEMON
+# BEFORE:  LOGIN
+# KEYWORD:
+. /etc/rc.subr
+name=klac
+rcvar=klaculator_enable
+command="/usr/home/klaculator/bin/klaculator"
+pidfile="/var/run/${name}.pid"
+load_rc_config $name
+run_rc_command "$1"
