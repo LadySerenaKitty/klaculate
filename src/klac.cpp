@@ -11,6 +11,8 @@
 #include <cmath>
 #include <sstream>
 
+#include <sys/stat.h>
+
 std::string stringmaker(std::vector<token> &data, bool html);
 
 std::string stringmaker(std::vector<token> &data) { return stringmaker(data, false); }
@@ -24,17 +26,28 @@ void runtask(FCGX_Request *rq) {
 	oh.addValue((char *) "scheme", ih.getHeader("REQUEST_SCHEME"));
 	oh.addValue("host", ih.getHeader("HTTP_HOST"));
 
+	oh.addTemplate("header.html");
 	std::string pt;
-	if (ih.existGetter("e") || ih.existFormer("e") || ih.existGetter("b")) {
+	if (ih.existGetter("e") || ih.existFormer("e") || ih.existGetter("b") || ih.existPath(0)) {
 		if (ih.existFormer("e")) { pt = ih.getFormer("e"); }
 		else if (ih.existGetter("e")) { pt = ih.getGetter("e"); }
 		else if (ih.existGetter("b")) {
 			try { pt = base64_decode(ih.getGetter("b"), true); }
 			catch (std::runtime_error re) { pt = ""; }
 		}
+		else if (ih.existPath(0)) {
+			try { pt = base64_decode(ih.getPath(0), true); }
+			catch (std::runtime_error re) {
+				pt = "";
+				std::stringstream ss;
+				ss << "pages/" << ih.getPath(0);
+				struct stat buffer;
+				if (stat(ss.str().c_str(), &buffer) != 0) {
+					oh.addTemplate(ss.str());
+				}
+			}
+		}
 	}
-
-	oh.addTemplate("header.html");
 
 	if (!pt.empty()) {
 		std::vector<token> tks;
