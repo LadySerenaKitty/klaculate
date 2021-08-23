@@ -147,13 +147,26 @@ void simpleTexter(util::OutputHelper &oh, std::string type, std::string text) {
 	oh.addHelper(dt);
 
 }
-void stringer(util::OutputHelper &oh, std::string &first, std::vector<token> &data, std::string type) {
+void stringer(util::OutputHelper &oh, std::string &first, std::vector<token> &data, std::string type, token &left, token &right, token &res) {
 	std::string str = stringmaker(data, true);
 	util::OutputHelper *dt = new util::OutputHelper();
 	dt->addValue("texta", first);
 	dt->addValue("textb", str);
 	dt->addValue("type", type);
+
+	std::stringstream sl;
+	std::stringstream sr;
+	std::stringstream sa;
+	sl << left;
+	sr << right;
+	sa << res;
+
+	dt->addValue("left", sl.str());
+	dt->addValue("right", sr.str());
+	dt->addValue("result", sa.str());
+
 	dt->addTemplate("step.html");
+
 	oh.addHelper(dt);
 }
 
@@ -169,8 +182,16 @@ bool hasType(char type, std::vector<token> &data) {
 void solver(util::OutputHelper &oh, std::vector<token> &input) {
 	// FAST FAIL
 	if (input.size() <= 2) { return; }
-	std::string pt = "Begin!";
-	stringer(oh, pt, input, "none");
+	else {
+		std::string pt = "Begin!";
+		std::string str = stringmaker(input, true);
+		util::OutputHelper *dt = new util::OutputHelper();
+		dt->addValue("texta", pt);
+		dt->addValue("textb", str);
+		dt->addTemplate("start.html");
+		oh.addHelper(dt);
+	}
+
 
 	unsigned int a = 0;
 	if (hasType(TOKEN_PAREN_OPEN, input)) {
@@ -218,8 +239,10 @@ void solver(util::OutputHelper &oh, std::vector<token> &input) {
 		for (a = 0; a < input.size(); a++) {
 			if (input[a].type == TOKEN_EXPONENT) {
 				std::string temp = stringmaker(input, true);
-				replacer(input, a, token{TOKEN_NUMBER, std::pow(input[a - 1].value, input[a + 1].value)});
-				stringer(oh, temp, input, "exp");
+				token l = input[a-1], r = input[a + 1];
+				token q = token{TOKEN_NUMBER, std::pow(input[a - 1].value, input[a + 1].value)};
+				replacer(input, a, q);
+				stringer(oh, temp, input, "exp", l, r, q);
 				a = 0;
 			}
 		}
@@ -231,18 +254,23 @@ void solver(util::OutputHelper &oh, std::vector<token> &input) {
 		for (a = 0; a < input.size(); a++) {
 			if (input[a].type == TOKEN_MULT || input[a].type == TOKEN_DIV || input[a].type == TOKEN_MOD) {
 				std::string temp = stringmaker(input, true);
+				token l = input[a-1], r = input[a + 1];
+				token q;
 				switch (input[a].type) {
 					case TOKEN_MULT:
-						replacer(input, a, input[a - 1] * input[a + 1]);
-						stringer(oh, temp, input, "mult");
+						q = input[a - 1] * input[a + 1];
+						replacer(input, a, q);
+						stringer(oh, temp, input, "mult", l, r, q);
 						break;
 					case TOKEN_DIV:
-						replacer(input, a, input[a - 1] / input[a + 1]);
-						stringer(oh, temp, input, "divi");
+						q = input[a - 1] / input[a + 1];
+						replacer(input, a, q);
+						stringer(oh, temp, input, "divi", l, r, q);
 						break;
 					case TOKEN_MOD:
-						replacer(input, a, input[a - 1] % input[a + 1]);
-						stringer(oh, temp, input, "divi");
+						q = input[a - 1] % input[a + 1];
+						replacer(input, a, q);
+						stringer(oh, temp, input, "divi", l, r, q);
 						break;
 				}
 				a = 0;
@@ -257,14 +285,18 @@ void solver(util::OutputHelper &oh, std::vector<token> &input) {
 		for (a = 0; a < input.size(); a++) {
 			if (input[a].type == TOKEN_ADD || input[a].type == TOKEN_SUB) {
 				std::string temp = stringmaker(input, true);
+				token l = input[a-1], r = input[a + 1];
+				token q;
 				switch (input[a].type) {
 					case TOKEN_ADD:
-						replacer(input, a, input[a - 1] + input[a + 1]);
-						stringer(oh, temp, input, "add");
+						q = input[a - 1] + input[a + 1];
+						replacer(input, a, q);
+						stringer(oh, temp, input, "add", l, r, q);
 						break;
 					case TOKEN_SUB:
-						replacer(input, a, input[a - 1] - input[a + 1]);
-						stringer(oh, temp, input, "sub");
+						q = input[a - 1] - input[a + 1];
+						replacer(input, a, q);
+						stringer(oh, temp, input, "sub", l, r, q);
 						break;
 				}
 				a = 0;

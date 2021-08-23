@@ -100,9 +100,34 @@ div.divi > span.divi { font-weight: bold; }
 div.add > span.add { font-weight: bold; }
 div.sub > span.sub { font-weight: bold; }
 
+div.math > div > span.explain {
+	float: right;
+}
+
+div.exp > span.explain:before { content: "Exponent "; color: #ffffff; }
+div.mult > span.explain:before { content: "Multiply "; color: #ff7fff;}
+div.divi > span.explain:before { content: "Divide "; color: #ffff00; }
+div.add > span.explain:before { content: "Add "; color: #00ff00;}
+div.sub > span.explain:before { content: "Subtract "; color: #ff7f7f; }
+
+div.exp > span.explain > span.subsplain:before { content: "to the power of"; }
+div.mult > span.explain > span.subsplain:before { content: "and"; }
+div.divi > span.explain > span.subsplain:before { content: "over"; }
+div.add > span.explain > span.subsplain:before { content: "to"; }
+div.sub > span.explain > span.subsplain:before { content: "from"; }
+
+span.result:before { content: "Resulting in "; color: #c9c9c9; }
+span.result { float: right; }
+
+div.exp > span.result { color: #ffffff; }
+div.mult > span.result { color: #ff7fff; }
+div.divi > span.result { color: #ffff00; }
+div.add > span.result { color: #00ff00; }
+div.sub > span.result { color: #ff7f7f; }
+
 span.parens { color: #00ffff; }
 span.exp { color: #ffffff; }
 span.mult { color: #ff7fff; }
 span.divi { color: #ffff00; }
 span.add { color: #00ff00; }
-span.sub { color: #ff0000; }
+span.sub { color: #ff7f7f; }
