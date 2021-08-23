@@ -55,6 +55,41 @@ void runtask(FCGX_Request *rq) {
 		char te = 0;
 		int pcount = 0;
 		double value = 0;
+
+		// fixup/sanitize
+		std::regex fixer;
+		fixer = std::regex("([^0-9.+*^%ex\\/\\(\\)-]+)");
+		std::string tmp = std::regex_replace(pt, fixer, "");
+		pt = tmp;
+
+		switch (pt[0]) {
+			case '+': case '-':case '*':case'^':case'%':case 'e':case'x':case '/':
+				std::stringstream ss;
+				ss << "1";
+				ss << pt;
+				pt = ss.str();
+		}
+		switch (pt[pt.size()-1]) {
+			case '+': case '-':case '*':case'^':case'%':case 'e':case'x':case '/':
+				std::stringstream ss;
+				ss << pt;
+				ss << "1";
+				pt = ss.str();
+		}
+		bool same = false;
+		while (!same) {
+			fixer = std::regex("([-+*^%ex\\/\\(\\)])([-+*^%ex\\/\\(\\)])");
+			tmp = std::regex_replace(pt, fixer, "$1 1 $2");
+			same = tmp.size() == pt.size();
+			pt = tmp;
+		}
+		if (same) {
+			fixer = std::regex("([^0-9.+*^%ex\\/\\(\\)-]+)");
+			std::string tmp = std::regex_replace(pt, fixer, "");
+			pt = tmp;
+		}
+
+		//
 		std::regex re("([0-9.]+|[-+*^%ex\\/\\(\\)])");
 		auto tbeg = std::sregex_iterator(pt.begin(), pt.end(), re);
 		auto tend = std::sregex_iterator();
