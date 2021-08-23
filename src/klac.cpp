@@ -28,7 +28,10 @@ void runtask(FCGX_Request *rq) {
 	if (ih.existGetter("e") || ih.existFormer("e") || ih.existGetter("b")) {
 		if (ih.existFormer("e")) { pt = ih.getFormer("e"); }
 		else if (ih.existGetter("e")) { pt = ih.getGetter("e"); }
-		else if (ih.existGetter("b")) { pt = base64_decode(ih.getGetter("b"), true); }
+		else if (ih.existGetter("b")) {
+			try { pt = base64_decode(ih.getGetter("b"), true); }
+			catch (std::runtime_error re) { pt = ""; }
+		}
 	}
 
 	oh.addTemplate("header.html");
