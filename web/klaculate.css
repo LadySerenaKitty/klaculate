@@ -64,6 +64,17 @@ form > * {
 .emoji {
 	color: #ffffff;
 }
+
+.kittyface {
+	text-align: right;
+	float: right;
+}
+
+.kittyface:hover:before {
+	content: "🐾";
+	color: #ffffff;
+}
+
 div.banner {
 	font-size: 150%;
 }

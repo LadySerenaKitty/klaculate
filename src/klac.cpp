@@ -2,6 +2,7 @@
 #include "klac.h"
 #include "ktok.h"
 
+#include "util/base64.h"
 #include "util/InputHelper.h"
 #include "util/OutputHelper.h"
 
@@ -24,9 +25,10 @@ void runtask(FCGX_Request *rq) {
 	oh.addValue("host", ih.getHeader("HTTP_HOST"));
 
 	std::string pt;
-	if (ih.existGetter("e") || ih.existFormer("e")) {
+	if (ih.existGetter("e") || ih.existFormer("e") || ih.existGetter("b")) {
 		if (ih.existFormer("e")) { pt = ih.getFormer("e"); }
-		else { pt = ih.getGetter("e"); }
+		else if (ih.existGetter("e")) { pt = ih.getGetter("e"); }
+		else if (ih.existGetter("b")) { pt = base64_decode(ih.getGetter("b"), true); }
 	}
 
 	oh.addTemplate("header.html");
@@ -66,13 +68,16 @@ void runtask(FCGX_Request *rq) {
 		}
 
 		if (pcount > 0) { // close out all open parens
-			for (; pcount > 0; pcount--) {
+			for (int a = pcount; a > 0; a--) {
 				value = pcount;
 				tks.push_back(token{TOKEN_PAREN_CLOSE, value});
 			}
 		}
 		oh.addValue("eqi", stringmaker(tks));
+		oh.addValue("coded", base64_encode(stringmaker(tks, false), true));
 		solver(oh, tks);
+		oh.addValue("answer", stringmaker(tks, true));
+		oh.addTemplate("answer.html");
 	}
 	oh.addTemplate("footer.html");
 	std::string content = oh.getOutput();
@@ -101,6 +106,10 @@ void replacer(std::vector<token> &input, unsigned int pos, token nval) {
 	}
 }
 
+std::string numcheck(token &t) {
+	std::stringstream ss;
+	return ss.str();
+}
 std::string stringmaker(std::vector<token> &data, bool html) {
 	std::stringstream ss;
 	std::string cls;

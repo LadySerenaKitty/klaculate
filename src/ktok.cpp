@@ -30,6 +30,5 @@ std::ostream& operator<<(std::ostream &l, token &r) {
 		case TOKEN_SUB: l << "-"; break;
 		default: l << r.value;
 	}
-	l << " ";
 	return l;
 }

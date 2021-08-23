@@ -12,6 +12,7 @@ add_executable (klaculate main.cpp
 misctools.cpp
 ktok.cpp
 klac.cpp
+util/base64.cpp
 util/InputHelper.cpp
 util/OutputHelper.cpp
 )
