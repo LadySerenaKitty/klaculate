@@ -214,8 +214,8 @@ void solver(util::OutputHelper &oh, std::vector<token> &input) {
 	}
 
 	// mult/div/mod
-	if (hasType(TOKEN_MULT, input)) {
-		simpleTexter(oh, "mult", "Multiply and Divide/Modulo");
+	if (hasType(TOKEN_MULT, input) || hasType(TOKEN_DIV, input) || hasType(TOKEN_MOD, input)) {
+		simpleTexter(oh, "mult divi", "Multiply and Divide/Modulo");
 		for (a = 0; a < input.size(); a++) {
 			if (input[a].type == TOKEN_MULT || input[a].type == TOKEN_DIV || input[a].type == TOKEN_MOD) {
 				std::string temp = stringmaker(input, true);
@@ -240,7 +240,7 @@ void solver(util::OutputHelper &oh, std::vector<token> &input) {
 
 
 	// add/sub
-	if (hasType(TOKEN_ADD, input)) {
+	if (hasType(TOKEN_ADD, input) || hasType(TOKEN_SUB, input)) {
 		simpleTexter(oh, "add sub", "Add and Subtract");
 		for (a = 0; a < input.size(); a++) {
 			if (input[a].type == TOKEN_ADD || input[a].type == TOKEN_SUB) {
@@ -255,19 +255,6 @@ void solver(util::OutputHelper &oh, std::vector<token> &input) {
 						stringer(oh, temp, input, "sub");
 						break;
 				}
-				a = 0;
-			}
-		}
-	}
-
-	// sub
-	if (hasType(TOKEN_SUB, input)) {
-		simpleTexter(oh, "sub", "Subtract");
-		for (a = 0; a < input.size(); a++) {
-			if (input[a].type == TOKEN_SUB) {
-				std::string temp = stringmaker(input, true);
-				replacer(input, a, input[a - 1] - input[a + 1]);
-				stringer(oh, temp, input, "sub");
 				a = 0;
 			}
 		}
