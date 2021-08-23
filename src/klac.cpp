@@ -159,33 +159,28 @@ void solver(util::OutputHelper &oh, std::vector<token> &input) {
 	if (input.size() <= 2) { return; }
 	std::string pt = "Begin!";
 	stringer(oh, pt, input, "none");
-	DBG(stringmaker(input, false));
 
 	unsigned int a = 0;
 	if (hasType(TOKEN_PAREN_OPEN, input)) {
 		simpleTexter(oh, "paren", "Parenthesis");
 		while (hasType(TOKEN_PAREN_OPEN, input)) {
 			oh.addTemplate("paren_start.html");
-			DBG("hasType true");
 			int lev = 0;
 			int start = -1, end = -1;
 			for (a = 0; a < input.size() && lev == 0; a++) {
 				if (input[a].type == TOKEN_PAREN_OPEN) {
 					lev = input[a].value;
 					start = a;
-					DBG("\tstart " << start);
 				}
 			}
 			for (a = start; a < input.size() && end == -1; a++) {
 				if (input[a].type == TOKEN_PAREN_CLOSE && input[a].value == lev) {
 					end = a;
-					DBG("\tend " << end);
 				}
 			}
 			if (start != -1 && end != -1) {
 				std::vector<token> wrk;
 				for (a = (start + 1); a < end; a++) {
-					DBG("\t\tcopy " << a);
 					wrk.push_back(input[a]);
 				}
 				solver(oh, wrk);

@@ -77,11 +77,12 @@ div.math {
 
 div.parens {
 	border: 1px solid #7f7f7f;
-	border-left: 10px solid #ff0000;
-	border-right: 10px solid #ff0000;
+	border-left: 10px solid;
+	border-right: 10px solid;
 	border-radius: 15px;
 	margin: 5px;
 }
+
 div.parens > span.parens { font-weight: bold; }
 div.exp > span.exp { font-weight: bold; }
 div.mult > span.mult { font-weight: bold; }

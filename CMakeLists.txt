@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.3)
-project(klakulate)
+project(klaculate)
 
 execute_process(COMMAND ./ver.sh OUTPUT_VARIABLE GIT_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(CMAKE_PROJECT_VERSION_TWEAK ${GIT_COMMIT})
-set(klakulate_VERSION ${GIT_COMMIT})
+set(klaculate_VERSION ${GIT_COMMIT})
 
 if (EXISTS /usr/local/include)
 	include_directories(/usr/local/include)
