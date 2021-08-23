@@ -213,51 +213,48 @@ void solver(util::OutputHelper &oh, std::vector<token> &input) {
 		}
 	}
 
-	// mult
+	// mult/div/mod
 	if (hasType(TOKEN_MULT, input)) {
-		simpleTexter(oh, "mult", "Multiply");
+		simpleTexter(oh, "mult", "Multiply and Divide/Modulo");
 		for (a = 0; a < input.size(); a++) {
-			if (input[a].type == TOKEN_MULT) {
+			if (input[a].type == TOKEN_MULT || input[a].type == TOKEN_DIV || input[a].type == TOKEN_MOD) {
 				std::string temp = stringmaker(input, true);
-				replacer(input, a, input[a - 1] * input[a + 1]);
-				stringer(oh, temp, input, "mult");
+				switch (input[a].type) {
+					case TOKEN_MULT:
+						replacer(input, a, input[a - 1] * input[a + 1]);
+						stringer(oh, temp, input, "mult");
+						break;
+					case TOKEN_DIV:
+						replacer(input, a, input[a - 1] / input[a + 1]);
+						stringer(oh, temp, input, "divi");
+						break;
+					case TOKEN_MOD:
+						replacer(input, a, input[a - 1] % input[a + 1]);
+						stringer(oh, temp, input, "divi");
+						break;
+				}
 				a = 0;
 			}
 		}
 	}
 
-	// div
-	if (hasType(TOKEN_DIV, input)) {
-		simpleTexter(oh, "divi", "Divide");
-		for (a = 0; a < input.size(); a++) {
-			if (input[a].type == TOKEN_DIV) {
-				std::string temp = stringmaker(input, true);
-				replacer(input, a, input[a - 1] / input[a + 1]);
-				stringer(oh, temp, input, "divi");
-				a = 0;
-			}
-		}
-	}
-	if (hasType(TOKEN_MOD, input)) {
-		simpleTexter(oh, "divi", "Modulus");
-		for (a = 0; a < input.size(); a++) {
-			if (input[a].type == TOKEN_MOD) {
-				std::string temp = stringmaker(input, true);
-				replacer(input, a, input[a - 1] % input[a + 1]);
-				stringer(oh, temp, input, "divi");
-				a = 0;
-			}
-		}
-	}
 
-	// add
+	// add/sub
 	if (hasType(TOKEN_ADD, input)) {
-		simpleTexter(oh, "add", "Add");
+		simpleTexter(oh, "add sub", "Add and Subtract");
 		for (a = 0; a < input.size(); a++) {
-			if (input[a].type == TOKEN_ADD) {
+			if (input[a].type == TOKEN_ADD || input[a].type == TOKEN_SUB) {
 				std::string temp = stringmaker(input, true);
-				replacer(input, a, input[a - 1] + input[a + 1]);
-				stringer(oh, temp, input, "add");
+				switch (input[a].type) {
+					case TOKEN_ADD:
+						replacer(input, a, input[a - 1] + input[a + 1]);
+						stringer(oh, temp, input, "add");
+						break;
+					case TOKEN_SUB:
+						replacer(input, a, input[a - 1] - input[a + 1]);
+						stringer(oh, temp, input, "sub");
+						break;
+				}
 				a = 0;
 			}
 		}
