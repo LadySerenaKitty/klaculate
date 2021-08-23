@@ -1,0 +1,9 @@
+*.ninja
+*.cbp
+build
+nbproject
+src/klaculate.h
+.usages_clang
+
+web/*.localhost
+
