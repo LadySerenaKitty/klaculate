@@ -4,6 +4,7 @@
 #include <iostream>
 #include <istream>
 #include <ostream>
+#include <map>
 
 #include <sys/stat.h>
 
@@ -42,6 +43,8 @@ pthread_t threads[n_threads];
 struct FCGI_Info {
 	int fcgi_fd;
 };
+
+std::map<std::string, std::vector<std::string>*> *tokenplacer;
 
 int main(int argc, char** argv) {
 	std::cout << KLACULATE_NAME << " " << KLACULATE_VERSION << std::endl << std::flush;
@@ -174,7 +177,11 @@ void* start_fcgi_worker(void* arg) {
 		FCGX_Accept_r(&request);
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 
-		runtask(&request);
+		int prev = 0;
+		if (request.requestId != prev) {
+			runtask(&request);
+			prev = request.requestId;
+		}
 
 		FCGX_Finish_r(&request);
 	}

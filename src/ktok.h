@@ -3,15 +3,16 @@
 
 #include <ostream>
 
-#define TOKEN_PAREN_OPEN 1
-#define TOKEN_PAREN_CLOSE 2
-#define TOKEN_EXPONENT 3
-#define TOKEN_MULT 4
-#define TOKEN_DIV 5
-#define TOKEN_MOD 6
-#define TOKEN_ADD 7
-#define TOKEN_SUB 8
-#define TOKEN_NUMBER 0x7f
+#define TOKEN_PAREN_OPEN '('
+#define TOKEN_PAREN_CLOSE ')'
+#define TOKEN_EXPONENT '^'
+#define TOKEN_MULT '*'
+#define TOKEN_DIV '/'
+#define TOKEN_MOD '%'
+#define TOKEN_ADD '+'
+#define TOKEN_SUB '-'
+#define TOKEN_NUMBER '#'
+#define TOKEN_INVALID '?'
 
 typedef struct tokens {
 	unsigned char type;
