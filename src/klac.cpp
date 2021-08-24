@@ -10,8 +10,13 @@
 #include <vector>
 #include <cmath>
 #include <sstream>
+#include <map>
 
 #include <sys/stat.h>
+
+#define AADD token{TOKEN_ADD, (double)pcount}
+#define AONE token{TOKEN_NUMBER, (double)1}
+#define AZRO token{TOKEN_NUMBER, (double)0}
 
 std::string stringmaker(std::vector<token> &data, bool html);
 
@@ -27,18 +32,18 @@ void runtask(FCGX_Request *rq) {
 	oh.addValue("host", ih.getHeader("HTTP_HOST"));
 
 	oh.addTemplate("header.html");
-	std::string pt;
+	std::string pt = "";
 	if (ih.existGetter("e") || ih.existFormer("e") || ih.existGetter("b") || ih.existPath(0)) {
 		if (ih.existFormer("e")) { pt = ih.getFormer("e"); }
 		else if (ih.existGetter("e")) { pt = ih.getGetter("e"); }
 		else if (ih.existGetter("b")) {
 			try { pt = base64_decode(ih.getGetter("b"), true); }
-			catch (std::runtime_error re) { pt = ""; }
+			catch (std::runtime_error re) { pt.clear(); }
 		}
 		else if (ih.existPath(0)) {
 			try { pt = base64_decode(ih.getPath(0), true); }
 			catch (std::runtime_error re) {
-				pt = "";
+				pt.clear();
 				std::stringstream ss;
 				ss << "pages/" << ih.getPath(0);
 				struct stat buffer;
@@ -56,43 +61,41 @@ void runtask(FCGX_Request *rq) {
 		int pcount = 0;
 		double value = 0;
 
+		// normalize tokens
+		// parens
+		findAndReplaceAll(pt, "{", "(");
+		findAndReplaceAll(pt, "[", "(");
+		findAndReplaceAll(pt, "}", ")");
+		findAndReplaceAll(pt, "]", ")");
+		// exp
+		findAndReplaceAll(pt, "e", "^");
+		// m/d/mod
+		findAndReplaceAll(pt, "x", "*");
+		findAndReplaceAll(pt, "×", "*");
+		findAndReplaceAll(pt, "÷", "/");
+
 		// fixup/sanitize
-		std::regex fixer;
-		fixer = std::regex("([^0-9.+*^%ex\\/\\(\\)-]+)");
-		std::string tmp = std::regex_replace(pt, fixer, "");
-		pt = tmp;
-
-		switch (pt[0]) {
-			case '+': case '-':case '*':case'^':case'%':case 'e':case'x':case '/':
-				std::stringstream ss;
-				ss << "1";
-				ss << pt;
-				pt = ss.str();
-		}
-		switch (pt[pt.size()-1]) {
-			case '+': case '-':case '*':case'^':case'%':case 'e':case'x':case '/':
-				std::stringstream ss;
-				ss << pt;
-				ss << "1";
-				pt = ss.str();
-		}
 		bool same = false;
+		std::string validtokens = "\\(\\)^*\\/%+-";
+		std::stringstream rtoken;
+		rtoken << "([^0-9." << validtokens << "]+)";
+		std::regex fixer(rtoken.str());
 		while (!same) {
-			fixer = std::regex("([-+*^%ex\\/\\(\\)])([-+*^%ex\\/\\(\\)])");
-			tmp = std::regex_replace(pt, fixer, "$1 1 $2");
-			same = tmp.size() == pt.size();
-			pt = tmp;
-		}
-		if (same) {
-			fixer = std::regex("([^0-9.+*^%ex\\/\\(\\)-]+)");
 			std::string tmp = std::regex_replace(pt, fixer, "");
+			same = pt.length() == tmp.length();
 			pt = tmp;
 		}
 
-		//
-		std::regex re("([0-9.]+|[-+*^%ex\\/\\(\\)])");
+		// tokenizer
+		rtoken.str(std::string());
+		rtoken << "([0-9.]+|[";
+		rtoken << validtokens;
+		rtoken << "])";
+
+		std::regex re(rtoken.str());
 		auto tbeg = std::sregex_iterator(pt.begin(), pt.end(), re);
 		auto tend = std::sregex_iterator();
+		token prev = token{TOKEN_ADD, 0};
 		for(std::sregex_iterator t = tbeg; t != tend; t++) {
 			std::smatch match = *t;
 			tt = 0;
@@ -100,8 +103,8 @@ void runtask(FCGX_Request *rq) {
 				te = match.str()[0];
 				if (te == '(') { tt = TOKEN_PAREN_OPEN; pcount++;}
 				else if (te == ')') { tt = TOKEN_PAREN_CLOSE; }
-				else if (te == '^' || te == 'e') { tt = TOKEN_EXPONENT; }
-				else if (te == '*' || te == 'x') { tt = TOKEN_MULT; }
+				else if (te == '^') { tt = TOKEN_EXPONENT; }
+				else if (te == '*') { tt = TOKEN_MULT; }
 				else if (te == '/') { tt = TOKEN_DIV; }
 				else if (te == '%') { tt = TOKEN_MOD; }
 				else if (te == '+') { tt = TOKEN_ADD; }
@@ -113,22 +116,68 @@ void runtask(FCGX_Request *rq) {
 			if (tt == TOKEN_NUMBER) { value = std::stod(match.str(), nullptr); }
 			else { value = pcount; }
 
-			tks.push_back(token{tt, value});
+			bool number = tt == TOKEN_NUMBER;
+			bool paro = tt == TOKEN_PAREN_OPEN;
+			bool parc = tt == TOKEN_PAREN_CLOSE;
+			bool paren = paro || parc;
 
-			if (tt == TOKEN_PAREN_CLOSE) { pcount--; }
+			// TOKEN_NUMBER cannot adjoin TOKEN_NUMBER
+			// With parenthesis, the following arrangement is required:
+			// TOKEN_PAREN_OPEN -> TOKEN_PAREN_OPEN | TOKEN_NUMBER | TOKEN_PAREN_CLOSE
+			// These are invalid:
+			// TOKEN_NUMBER -> TOKEN_PAREN_OPEN
+			// TOKEN_PAREN_CLOSE -> TOKEN_PAREN_OPEN
+
+
+			if (paro) {
+				if (prev.type == TOKEN_NUMBER || prev.type == TOKEN_PAREN_CLOSE) { tks.push_back(AADD); }
+				pcount++;
+				value = pcount;
+			}
+			else if (parc) {
+				if (pcount) {
+					if (prev.type != TOKEN_NUMBER && prev.type != TOKEN_PAREN_OPEN && prev.type != TOKEN_PAREN_CLOSE) {
+						tks.push_back(AZRO);
+					}
+					tks.push_back(token{tt, value});
+					prev.type = tt;
+					prev.value = value;
+					pcount--;
+				}
+			}
+			else if (number) {
+				if (prev.type == TOKEN_NUMBER || prev.type == TOKEN_PAREN_CLOSE) { tks.push_back(AADD); }
+			}
+			else {
+				if (prev.type != TOKEN_NUMBER && prev.type != TOKEN_PAREN_CLOSE) {
+					tks.push_back(AONE);
+				}
+			}
+
+			if (!parc) {
+				tks.push_back(token{tt, value});
+				prev.type = tt;
+				prev.value = value;
+			}
 		}
 
+		if (tks.size() > 1 && prev.type != TOKEN_NUMBER && prev.type != TOKEN_PAREN_CLOSE) {
+			tks.pop_back();
+		}
 		if (pcount > 0) { // close out all open parens
 			for (int a = pcount; a > 0; a--) {
-				value = pcount;
+				value = a;
 				tks.push_back(token{TOKEN_PAREN_CLOSE, value});
 			}
 		}
-		oh.addValue("eqi", stringmaker(tks));
-		oh.addValue("coded", base64_encode(stringmaker(tks, false), true));
-		solver(oh, tks);
-		oh.addValue("answer", stringmaker(tks, true));
-		oh.addTemplate("answer.html");
+
+		if (tks.size() > 0) {
+			oh.addValue("eqi", stringmaker(tks));
+			oh.addValue("coded", base64_encode(stringmaker(tks, false), true));
+			solver(oh, tks);
+			oh.addValue("answer", stringmaker(tks, true));
+			oh.addTemplate("answer.html");
+		}
 	}
 	oh.addTemplate("footer.html");
 	std::string content = oh.getOutput();
