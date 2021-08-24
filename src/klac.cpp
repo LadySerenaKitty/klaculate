@@ -101,7 +101,7 @@ void runtask(FCGX_Request *rq) {
 			tt = 0;
 			if (match.str().size() == 1) {
 				te = match.str()[0];
-				if (te == '(') { tt = TOKEN_PAREN_OPEN; pcount++;}
+				if (te == '(') { tt = TOKEN_PAREN_OPEN; }
 				else if (te == ')') { tt = TOKEN_PAREN_CLOSE; }
 				else if (te == '^') { tt = TOKEN_EXPONENT; }
 				else if (te == '*') { tt = TOKEN_MULT; }
@@ -155,8 +155,19 @@ void runtask(FCGX_Request *rq) {
 			}
 
 			if (!parc) {
+				DBG(tt << " -> " << value);
 				tks.push_back(token{tt, value});
 				prev.type = tt;
+				prev.value = value;
+			}
+		} // end tokenizer
+
+		if (pcount > 0) { // close out all open parens
+			DBG("close parens: " << pcount);
+			for (int a = pcount; a > 0; --a) {
+				value = a;
+				tks.push_back(token{TOKEN_PAREN_CLOSE, value});
+				prev.type = TOKEN_PAREN_CLOSE;
 				prev.value = value;
 			}
 		}
@@ -164,14 +175,11 @@ void runtask(FCGX_Request *rq) {
 		if (tks.size() > 1 && prev.type != TOKEN_NUMBER && prev.type != TOKEN_PAREN_CLOSE) {
 			tks.pop_back();
 		}
-		if (pcount > 0) { // close out all open parens
-			for (int a = pcount; a > 0; a--) {
-				value = a;
-				tks.push_back(token{TOKEN_PAREN_CLOSE, value});
-			}
-		}
 
 		if (tks.size() > 0) {
+			for (token t : tks) {
+				DBG(t.type << "\t" << t.value);
+			}
 			oh.addValue("eqi", stringmaker(tks));
 			oh.addValue("coded", base64_encode(stringmaker(tks, false), true));
 			solver(oh, tks);
@@ -278,7 +286,29 @@ bool hasType(char type, std::vector<token> &data) {
 // and run those in recursed calls
 void solver(util::OutputHelper &oh, std::vector<token> &input) {
 	// FAST FAIL
-	if (input.size() <= 2) { return; }
+	if (input.size() == 0) {
+		input.push_back(AZRO);
+		return;
+	}
+	else if (input.size() == 1) {
+		if (input[0].type != TOKEN_NUMBER) {
+			input.pop_back();
+			input.push_back(AZRO);
+		}
+		return;
+	}
+	else if (input.size() == 2) {
+		if (input[0].type == TOKEN_NUMBER) { input.pop_back(); }
+		else if (input[1].type == TOKEN_NUMBER) {
+			input[0] = input[1];
+			input.pop_back();
+		}
+		else {
+			input.clear();
+			input.push_back(AZRO);
+		}
+		return;
+	}
 	else {
 		std::string pt = "Begin!";
 		std::string str = stringmaker(input, true);
