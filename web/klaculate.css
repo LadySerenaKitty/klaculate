@@ -4,7 +4,7 @@ body {
 	border: none;
 	background: #000000;
 	color: #c9c9c9;
-	font-family: monospace;
+	font-family: 'B612 Mono', monospace;
 	font-size: 20px;
 	tab-size: 4;
 }
@@ -45,7 +45,7 @@ input {
 	color: #c9c9c9;
 	border: 1px solid #c9c9c9;
 	background: #000000;
-	font-family: monospace;
+	font-family: 'B612 Mono', monospace;
 	font-size: 20px;
 }
 
