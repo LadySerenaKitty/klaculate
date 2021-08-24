@@ -2,7 +2,7 @@ body {
 	margin: auto;
 	padding: 16px;
 	border: none;
-	background: #363636;
+	background: #000000;
 	color: #c9c9c9;
 	font-family: monospace;
 	font-size: 20px;
@@ -81,16 +81,17 @@ div.banner {
 
 div.math {
 	border: 1px solid #7f7f7f;
-	border-radius: 5px;
-	margin: 5px;
+	border-radius: 15px;
+	margin: 15px;
+	padding: 15px;
+	background: #2b2b2b;
 }
 
 div.parens {
 	border: 1px solid #7f7f7f;
 	border-left: 10px solid;
 	border-right: 10px solid;
-	border-radius: 15px;
-	margin: 5px;
+	border-radius: 30px;
 }
 
 div.parens > span.parens { font-weight: bold; }
