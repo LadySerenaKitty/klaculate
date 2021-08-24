@@ -177,11 +177,7 @@ void* start_fcgi_worker(void* arg) {
 		FCGX_Accept_r(&request);
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 
-		int prev = 0;
-		if (request.requestId != prev) {
-			runtask(&request);
-			prev = request.requestId;
-		}
+		runtask(&request);
 
 		FCGX_Finish_r(&request);
 	}

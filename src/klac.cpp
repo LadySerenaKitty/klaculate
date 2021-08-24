@@ -155,7 +155,6 @@ void runtask(FCGX_Request *rq) {
 			}
 
 			if (!parc) {
-				DBG(tt << " -> " << value);
 				tks.push_back(token{tt, value});
 				prev.type = tt;
 				prev.value = value;
@@ -163,7 +162,6 @@ void runtask(FCGX_Request *rq) {
 		} // end tokenizer
 
 		if (pcount > 0) { // close out all open parens
-			DBG("close parens: " << pcount);
 			for (int a = pcount; a > 0; --a) {
 				value = a;
 				tks.push_back(token{TOKEN_PAREN_CLOSE, value});
@@ -177,9 +175,6 @@ void runtask(FCGX_Request *rq) {
 		}
 
 		if (tks.size() > 0) {
-			for (token t : tks) {
-				DBG(t.type << "\t" << t.value);
-			}
 			oh.addValue("eqi", stringmaker(tks));
 			oh.addValue("coded", base64_encode(stringmaker(tks, false), true));
 			solver(oh, tks);
