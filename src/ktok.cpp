@@ -1,6 +1,7 @@
 #include "ktok.h"
 #include <cmath>
 #include <iomanip>
+#include <cmath>
 
 token operator*(token &l, token &r) {
 	return token{TOKEN_NUMBER, l.value * r.value};
@@ -19,16 +20,10 @@ token operator-(token &l, token &r) {
 }
 
 std::ostream& operator<<(std::ostream &l, token &r) {
-	switch (r.type) {
-		case TOKEN_PAREN_OPEN: l << "("; break;
-		case TOKEN_PAREN_CLOSE: l << ")"; break;
-		case TOKEN_EXPONENT: l << "^"; break;
-		case TOKEN_MULT: l << "*"; break;
-		case TOKEN_DIV: l << "/"; break;
-		case TOKEN_MOD: l << "%"; break;
-		case TOKEN_ADD: l << "+"; break;
-		case TOKEN_SUB: l << "-"; break;
-		default: l << r.value;
+	if (r.type == TOKEN_NUMBER) {
+		if (std::isinf(r.value)) { l << "∞"; }
+		else { l << r.value; }
 	}
+	else { l << r.type; }
 	return l;
 }

@@ -19,5 +19,6 @@
 #endif
 
 void findAndReplaceAll(std::string& data, std::string toSearch, std::string replaceStr);
+void findAndReplaceAny(std::string& data, std::string toSearch, std::string replaceStr);
 
 #endif /* klaculate_h */

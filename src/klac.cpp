@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 
 #define AADD token{TOKEN_ADD, (double)pcount}
+#define AMUL token{TOKEN_MULT, (double)pcount}
 #define AONE token{TOKEN_NUMBER, (double)1}
 #define AZRO token{TOKEN_NUMBER, (double)0}
 
@@ -63,16 +64,15 @@ void runtask(FCGX_Request *rq) {
 
 		// normalize tokens
 		// parens
-		findAndReplaceAll(pt, "{", "(");
-		findAndReplaceAll(pt, "[", "(");
-		findAndReplaceAll(pt, "}", ")");
-		findAndReplaceAll(pt, "]", ")");
+		findAndReplaceAny(pt, "\\{\\[", "(");
+		findAndReplaceAny(pt, "\\}\\]", ")");
 		// exp
-		findAndReplaceAll(pt, "e", "^");
+		findAndReplaceAny(pt, "e^", "^");
 		// m/d/mod
-		findAndReplaceAll(pt, "x", "*");
-		findAndReplaceAll(pt, "×", "*");
-		findAndReplaceAll(pt, "÷", "/");
+		findAndReplaceAny(pt, "x×∗", "*");
+		findAndReplaceAny(pt, "÷∕", "/");
+		// a/s
+		findAndReplaceAll(pt, "−", "-");
 
 		// fixup/sanitize
 		bool same = false;
@@ -130,7 +130,7 @@ void runtask(FCGX_Request *rq) {
 
 
 			if (paro) {
-				if (prev.type == TOKEN_NUMBER || prev.type == TOKEN_PAREN_CLOSE) { tks.push_back(AADD); }
+				if (prev.type == TOKEN_NUMBER || prev.type == TOKEN_PAREN_CLOSE) { tks.push_back(AMUL); }
 				pcount++;
 				value = pcount;
 			}
@@ -146,7 +146,8 @@ void runtask(FCGX_Request *rq) {
 				}
 			}
 			else if (number) {
-				if (prev.type == TOKEN_NUMBER || prev.type == TOKEN_PAREN_CLOSE) { tks.push_back(AADD); }
+				if (prev.type == TOKEN_NUMBER) { tks.push_back(AADD); }
+				else if (prev.type == TOKEN_PAREN_CLOSE) { tks.push_back(AMUL); }
 			}
 			else {
 				if (prev.type != TOKEN_NUMBER && prev.type != TOKEN_PAREN_CLOSE) {
