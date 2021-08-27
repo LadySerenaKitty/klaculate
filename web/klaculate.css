@@ -132,3 +132,7 @@ span.mult { color: #ff7fff; }
 span.divi { color: #ffff00; }
 span.add { color: #00ff00; }
 span.sub { color: #ff7f7f; }
+
+ul.answers > li {
+	white-space: pre;
+}
