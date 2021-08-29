@@ -94,7 +94,7 @@ void runtask(FCGX_Request *rq) {
 		auto tbeg = std::sregex_iterator(pt.begin(), pt.end(), re);
 		auto tend = std::sregex_iterator();
 
-		for(std::sregex_iterator t = tbeg; t != tend && tks.size() > 1000; t++) {
+		for(std::sregex_iterator t = tbeg; t != tend && tks.size() < 1000; t++) {
 			std::smatch match = *t;
 			std::string m = match.str().substr(0, 50);
 			token tk;
