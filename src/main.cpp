@@ -22,6 +22,8 @@
 #include "klac.h"
 #include "util/InputHelper.h"
 #include "util/OutputHelper.h"
+#include "util/TokenData.h"
+
 /*
  * Adapted from https://gist.github.com/dermesser/e2f9b66457ae19ebd116
  * Adapted from https://forums.freebsd.org/threads/sample-daemon-in-c.73059/
@@ -143,6 +145,7 @@ int main(int argc, char** argv) {
 	struct FCGI_Info info;
 	info.fcgi_fd = fcgifd;
 
+	tdInit();
 	for (unsigned int i = 0; i < n_threads; i++) {
 		pthread_create(&threads[i], NULL, start_fcgi_worker, (void*) &info);
 	}
@@ -150,9 +153,7 @@ int main(int argc, char** argv) {
 	// Wait indefinitely
 	for (unsigned int i = 0; i < n_threads; i++) {
 		pthread_join(threads[i], NULL);
-		if (stopService) {
-			break;
-		}
+		if (stopService) { break; }
 	}
 
 	if (set_pid) {

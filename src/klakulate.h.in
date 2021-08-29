@@ -11,11 +11,11 @@
 
 #ifdef Debug
 #include <iostream>
-#define DBG(a) std::cout << "[" << a << "]\n" << std::flush
+#define DBG(a) std::cout << __FILE__ << ":" << __LINE__ << "\t[" << a << "]\n" << std::flush
 #endif
 
 #ifndef Debug
-#define DBG(a) // a
+#define DBG(a) /* a */
 #endif
 
 void findAndReplaceAll(std::string& data, std::string toSearch, std::string replaceStr);

@@ -1,4 +1,13 @@
 <div class="header">
 	<div class="banner">Answer: {answer}</div>
-	<div>Link: <a href="{scheme}://{host}/{coded}/">{scheme}://{host}/{coded}/</a></div>
+	<div class="math">
+		<ul class="answers">
+			<li>Default:    {answer.def}</li>
+			<li>Fixed:      {answer.fix}</li>
+			<li>Scientific: {answer.sci}</li>
+			<li>Hexfloat:   {answer.hex}</li>
+			<li>Raw Value:  {answer.raw}</li>
+		</ul>
+		Link: <a href="{scheme}://{host}/{coded}/">{scheme}://{host}/{coded}/</a>
+	</div>
 </div>
