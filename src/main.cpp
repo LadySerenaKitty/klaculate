@@ -146,6 +146,8 @@ int main(int argc, char** argv) {
 	info.fcgi_fd = fcgifd;
 
 	tdInit();
+	tdList();
+
 	for (unsigned int i = 0; i < n_threads; i++) {
 		pthread_create(&threads[i], NULL, start_fcgi_worker, (void*) &info);
 	}

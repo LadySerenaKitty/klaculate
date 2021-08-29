@@ -79,3 +79,14 @@ bool tokenNumeric(const token &input) {
 	try { return tdata.at(input.type.num).identity.type == TOKEN_NUMBER; }
 	catch (std::out_of_range oor) { return true; }
 }
+
+void tdList() {
+	for (std::pair<int, TokenData> p : tdata) {
+		std::cout << p.first << "\t";
+		TokenData td = p.second;
+		std::cout << td.leftNumber << ", " << td.rightNumber;
+		std::cout << ", token{" << td.insertLeft.type.str << ", " << td.insertLeft.value << "}";
+		std::cout << ", token{" << td.insertRight.type.str << ", " << td.insertRight.value << "}";
+		std::cout << ", token{" << td.identity.type.str << ", " << td.identity.value << "}\n";
+	}
+}

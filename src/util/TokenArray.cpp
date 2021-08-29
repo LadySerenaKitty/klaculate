@@ -195,6 +195,10 @@ std::size_t util::TokenArray::removeunit(TokenHolder *c) {
 	count--;
 	if (count == 0) { return 0; }
 
+	if (hPrev && c->getPrev() == root) {
+		root = c;
+	}
+
 	if (hNext && hPrev) {
 		tmp_p->setNext(tmp_n);
 		tmp_n->setPrev(tmp_p);
