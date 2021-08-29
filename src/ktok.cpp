@@ -2,7 +2,7 @@
 #include <cmath>
 #include <iomanip>
 
-bool operator==(ttype &l, char r[sizeof(int)]) {
+bool operator==(ttype &l, unsigned char r[sizeof(int)]) {
 	return l.num == ttype(r).num;
 }
 bool operator==(ttype &l, int r) {
@@ -11,14 +11,14 @@ bool operator==(ttype &l, int r) {
 bool operator==(ttype &l, ttype &r) {
 	return l.num == r.num;
 }
-bool operator==(char l[sizeof(int)], ttype &r) {
-	return ttype(r).num == r.num;
+bool operator==(unsigned char l[sizeof(int)], ttype &r) {
+	return ttype(l).num == r.num;
 }
 bool operator==(int l, ttype &r) {
 	return l == r.num;
 }
 
-bool operator!=(ttype &l, char r[sizeof(int)]) {
+bool operator!=(ttype &l, unsigned char r[sizeof(int)]) {
 	return !(l.num == ttype(r).num);
 }
 bool operator!=(ttype &l, int r) {
@@ -37,7 +37,7 @@ bool operator!=(int l, ttype &r) {
 ttype::ttype() {
 	num = 0;
 }
-ttype::ttype(char r[sizeof(int)]) {
+ttype::ttype(unsigned char r[sizeof(int)]) {
 	for (int a = 0; a < sizeof(int); a++) { str[a] = r[a]; }
 }
 ttype::ttype(int r) {
@@ -55,6 +55,12 @@ ttype& ttype::operator=(ttype &r) {
 ttype& ttype::operator=(const ttype &r) {
 	num = r.num;
 	return *this;
+}
+
+bool operator==(token &l, token &r) {
+	if (l.value != r.value) { return false; }
+	if (l.type.num != r.type.num) { return false; }
+	return true;
 }
 
 token operator*(token &l, token &r) {

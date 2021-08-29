@@ -15,7 +15,7 @@
 #endif
 
 #ifndef Debug
-#define DBG(a) // a
+#define DBG(a) /* a */
 #endif
 
 void findAndReplaceAll(std::string& data, std::string toSearch, std::string replaceStr);

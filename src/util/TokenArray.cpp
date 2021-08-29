@@ -1,6 +1,6 @@
 #include "TokenArray.h"
 
-token invalid = token{TOKEN_INVALID, INVALID_TOKEN};
+static token invalid = token{TOKEN_INVALID, INVALID_TOKEN};
 
 util::TokenArray::TokenArray() {
 	count = 0;
@@ -84,7 +84,12 @@ token& util::TokenArray::getNext() {
 
 void util::TokenArray::remove() {
 	curpos = removeunit(cur);
-	setCurrentPos(curpos);
+	if (count == 0) {
+		curpos = 0;
+		cur = nullptr;
+		root = nullptr;
+	}
+	else { setCurrentPos(curpos); }
 }
 void util::TokenArray::removePrev() {
 	if (cur->hasPrev()) {
@@ -132,6 +137,8 @@ void util::TokenArray::clear() {
 		cur = th;
 	}
 	if (cur != nullptr) { delete cur; }
+	cur = nullptr;
+	root = nullptr;
 }
 
 token& util::TokenArray::operator[](std::size_t idx) {
@@ -139,7 +146,7 @@ token& util::TokenArray::operator[](std::size_t idx) {
 	TokenHolder *tmp = root;
 
 	if (idx >= count) { idx = (count - 1); }
-	for (int a = 1; a < count; a++) {
+	for (int a = 1; a <= idx; a++) {
 		tmp = tmp->getNext();
 	}
 	return tmp->get();
@@ -165,7 +172,6 @@ std::size_t util::TokenArray::addunit(TokenHolder *c, TokenHolder *th) {
 	th->setPrev(c);
 	c->setNext(th);
 	count++;
-	//DBG(count << "\t" << (c->get().type) << "\t" << (th->get().type));
 	return newpos;
 }
 

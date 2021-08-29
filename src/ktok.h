@@ -5,22 +5,24 @@
 
 #include <ostream>
 
-#define TOKEN_PAREN_OPEN (char[sizeof(int)]){'('}
-#define TOKEN_PAREN_CLOSE (char[sizeof(int)]){')'}
-#define TOKEN_EXPONENT (char[sizeof(int)]){'^'}
-#define TOKEN_MULT (char[sizeof(int)]){'*'}
-#define TOKEN_DIV (char[sizeof(int)]){'/'}
-#define TOKEN_MOD (char[sizeof(int)]){'*'}
-#define TOKEN_ADD (char[sizeof(int)]){'+'}
-#define TOKEN_SUB (char[sizeof(int)]){'-'}
-#define TOKEN_NUMBER (char[sizeof(int)]){'#'}
-#define TOKEN_INVALID (char[sizeof(int)]){'?'}
+#define tsize (unsigned char[sizeof(int)])
+
+#define TOKEN_PAREN_OPEN tsize{'(', 0, 0, 0}
+#define TOKEN_PAREN_CLOSE tsize{')', 0, 0, 0}
+#define TOKEN_EXPONENT tsize{'^', 0, 0, 0}
+#define TOKEN_MULT tsize{'*', 0, 0, 0}
+#define TOKEN_DIV tsize{'/', 0, 0, 0}
+#define TOKEN_MOD tsize{'*', 0, 0, 0}
+#define TOKEN_ADD tsize{'+', 0, 0, 0}
+#define TOKEN_SUB tsize{'-', 0, 0, 0}
+#define TOKEN_NUMBER tsize{'#', 0, 0, 0}
+#define TOKEN_INVALID tsize{'?', 0, 0, 0}
 
 union ttype {
-	char str[sizeof(int)];
+	unsigned char str[sizeof(int)];
 	int num;
 	ttype();
-	ttype(char r[sizeof(int)]);
+	ttype(unsigned char r[sizeof(int)]);
 	ttype(int r);
 	ttype& operator=(int r);
 	ttype& operator=(ttype &r);
@@ -34,17 +36,19 @@ struct token {
 	token& operator=(const token &r);
 };
 
-bool operator==(ttype &l, char r[sizeof(int)]);
+bool operator==(ttype &l, unsigned char r[sizeof(int)]);
 bool operator==(ttype &l, int r);
 bool operator==(ttype &l, ttype &r);
-bool operator==(char l[sizeof(int)], ttype &r);
+bool operator==(unsigned char l[sizeof(int)], ttype &r);
 bool operator==(int l, ttype &r);
 
-bool operator!=(ttype &l, char r[sizeof(int)]);
+bool operator!=(ttype &l, unsigned char r[sizeof(int)]);
 bool operator!=(ttype &l, int r);
 bool operator!=(ttype &l, ttype &r);
-bool operator!=(char l[sizeof(int)], ttype &r);
+bool operator!=(unsigned char l[sizeof(int)], ttype &r);
 bool operator!=(int l, ttype &r);
+
+bool operator==(token &l, token &r);
 
 token operator*(token &l, token &r);
 token operator/(token &l, token &r);
