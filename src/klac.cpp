@@ -63,7 +63,7 @@ void runtask(FCGX_Request *rq) {
 		findAndReplaceAny(pt, "\\{\\[", "(");
 		findAndReplaceAny(pt, "\\}\\]", ")");
 		// exp
-		findAndReplaceAny(pt, "e^", "^");
+		//findAndReplaceAny(pt, "e^", "e");
 		// m/d/mod
 		findAndReplaceAny(pt, "x×∗", "*");
 		findAndReplaceAny(pt, "÷∕", "/");
@@ -85,7 +85,7 @@ void runtask(FCGX_Request *rq) {
 
 		// tokenizer
 		rtoken.str(std::string());
-		rtoken << "([0-9.]+";
+		rtoken << "([0-9.e+-]+";
 		rtoken << "|[\\(\\)^*\\/%+-]";
 		rtoken << "|pi";
 		rtoken << ")";
@@ -175,6 +175,9 @@ void runtask(FCGX_Request *rq) {
 			oh.addValue("eqi", stringmaker(tks, false));
 			oh.addValue("coded", base64_encode(stringmaker(tks, false), true));
 			solver(oh, tks);
+			if (tks.size() == 0) { tks.add(token{TOKEN_NUMBER, 0}); }
+			tks.setCurrentPos(0);
+
 			oh.addValue("answer", stringmaker(tks, true));
 
 			std::stringstream ss_d;
