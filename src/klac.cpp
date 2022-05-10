@@ -85,8 +85,8 @@ void runtask(FCGX_Request *rq) {
 
 		// tokenizer
 		rtoken.str(std::string());
-		rtoken << "([0-9.e+-]+";
-		rtoken << "|[\\(\\)^*\\/%+-]";
+		rtoken << "([0-9.]+";
+		rtoken << "|[\\(\\)^e*\\/%+-]";
 		rtoken << "|pi";
 		rtoken << ")";
 
