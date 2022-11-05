@@ -4,6 +4,7 @@ build
 nbproject
 src/klaculate.h
 .usages_clang
+Makefile
 
 web/*.localhost
 
